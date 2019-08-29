@@ -109626,11 +109626,13 @@ function (_Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
     _this.state = {
       text: "",
-      to: "",
+      oneEmail: "",
+      emails: [],
       subject: "",
       redirect: false,
       noField: false,
-      sendIt: false
+      sendIt: false,
+      noEmail: false
     };
     return _this;
   }
@@ -109638,28 +109640,44 @@ function (_Component) {
   _createClass(App, [{
     key: "handleFormSubmit",
     value: function handleFormSubmit(event) {
+      var _this2 = this;
+
       event.preventDefault();
       var _this$state = this.state,
           text = _this$state.text,
-          to = _this$state.to,
+          emails = _this$state.emails,
           subject = _this$state.subject;
       var email = {
         text: text,
-        to: to,
+        emails: emails,
         subject: subject
       };
+      console.log(emails.length, "longitud");
 
-      if (text === "" || text === null || to === "" || to === null || subject === "" || subject === null) {
+      if (emails.length === 0) {
+        this.setState({
+          noEmail: true
+        });
+        return;
+      }
+
+      if (text === "" || text === null || subject === "" || subject === null) {
         this.setState({
           noField: true
         });
         return;
       }
 
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post("/api/send", email).then(function (response) {});
-      this.setState({
-        noField: false,
-        sendIt: true
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post("/api/send", email).then(function (response) {
+        _this2.setState({
+          noField: false,
+          sendIt: true,
+          noEmail: false,
+          text: "",
+          oneEmail: "",
+          emails: [],
+          subject: ""
+        });
       }); // })
       // .catch( error => console.log(error) )
     }
@@ -109674,12 +109692,23 @@ function (_Component) {
       this.setState(_objectSpread({}, this.state, (_objectSpread2 = {}, _defineProperty(_objectSpread2, name, value), _defineProperty(_objectSpread2, "sendIt", false), _objectSpread2)));
     }
   }, {
+    key: "addEmail",
+    value: function addEmail(event) {
+      event.preventDefault();
+      this.state.emails.push(this.state.oneEmail);
+      this.setState({
+        emails: this.state.emails,
+        oneEmail: "",
+        noEmail: false
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this2 = this,
+      var _this3 = this,
           _React$createElement;
 
-      console.log(this.state.text, "texto");
+      console.log(this.state.emails, "emails");
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "container"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core_Container__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -109694,24 +109723,38 @@ function (_Component) {
         }
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2", null, "Nuevo Email"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
         onSubmit: function onSubmit(e) {
-          return _this2.handleFormSubmit(e);
-        } // className={classes.form}
-        ,
-        noValidate: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
+          return _this3.addEmail(e);
+        }
+      }, this.state.emails && this.state.emails.map(function (email) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, email, ", ");
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
         variant: "outlined",
         margin: "normal",
         required: true,
         fullWidth: true,
-        name: "to",
-        label: "Destinatario",
+        name: "oneEmail",
+        label: "Destinatario/s",
         type: "text",
-        id: "to",
-        value: this.state.to,
+        id: "oneEmail",
+        value: this.state.oneEmail,
         onChange: function onChange(e) {
-          return _this2.handleChange(e);
+          return _this3.handleChange(e);
         }
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
+      }), this.state.noEmail ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+        style: {
+          color: "red"
+        }
+      }, "Introduce por lo menos un email")) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["Button"], {
+        type: "submit",
+        variant: "contained",
+        color: "primary"
+      }, "A\xF1adir")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+        onSubmit: function onSubmit(e) {
+          return _this3.handleFormSubmit(e);
+        } // className={classes.form}
+        ,
+        noValidate: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
         variant: "outlined",
         margin: "normal",
         required: true,
@@ -109722,14 +109765,14 @@ function (_Component) {
         id: "subject",
         value: this.state.subject,
         onChange: function onChange(e) {
-          return _this2.handleChange(e);
+          return _this3.handleChange(e);
         }
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["TextField"], (_React$createElement = {
         variant: "outlined",
         required: true,
         margin: "normal"
       }, _defineProperty(_React$createElement, "required", true), _defineProperty(_React$createElement, "fullWidth", true), _defineProperty(_React$createElement, "id", "text"), _defineProperty(_React$createElement, "label", "Texto"), _defineProperty(_React$createElement, "multiline", true), _defineProperty(_React$createElement, "rows", 4), _defineProperty(_React$createElement, "name", "text"), _defineProperty(_React$createElement, "autoFocus", true), _defineProperty(_React$createElement, "value", this.state.text), _defineProperty(_React$createElement, "onChange", function onChange(e) {
-        return _this2.handleChange(e);
+        return _this3.handleChange(e);
       }), _React$createElement)), this.state.noField ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
         style: {
           color: "red"

@@ -12,8 +12,9 @@ class MailController extends Controller
         Mail::raw($request->text, function($message) use($request){
             $message -> from("internet@ecomputer.es","Fernando");
             // foreach ()
-            $message -> to($request->to);
             $message -> subject($request->subject);
+            $message->to($request->emails);
+            
         });
         
     }
